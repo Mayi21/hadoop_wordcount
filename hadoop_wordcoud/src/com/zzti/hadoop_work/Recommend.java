@@ -24,6 +24,10 @@ import java.net.URISyntaxException;
  */
 public class Recommend {
     public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException, URISyntaxException {
+    	args = new String[2];
+    	for (int i = 0;i < args.length;i++){
+    		args[i] = String.valueOf(i);
+		}
         if (args.length < 1) {
             System.err.println("enter 0 or 1,0:use distributed cache,1:use normal map");
             System.exit(1);
@@ -80,6 +84,7 @@ public class Recommend {
             BaseDriver.initJob(new JobInitModel[]{userScoreMatrixJob, itermOccurrenceMatrixJob, recommendJob, sortJob});
         } else {
             String transferUserScoreOutpath = HadoopUtil.HDFS + "/out/3-recommend/transferUserScore";
+            //输入的是用户评分矩阵，输出的是transferUserScore
             JobInitModel transferUserScoreJob = new JobInitModel(new String[]{userScoreMatrixOutpath}, transferUserScoreOutpath
                     , conf
                     , null

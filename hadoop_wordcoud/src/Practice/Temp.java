@@ -2,12 +2,18 @@ package Practice;
 
 import org.apache.hadoop.io.Text;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Temp {
     public static void main(String[] args){
-        Text a = new Text();
-
-        a.set("11111111111111");
-        a.set("22222");
-        System.out.println(a);
+        Map<String,String> m= new HashMap<>();
+        m.put("1","11");
+        m.put("2","222");
+        m.put("3","333");
+        for (Map.Entry<String,String> n : m.entrySet()){
+            String string = n.getKey();
+            System.out.println(string);
+        }
     }
 }

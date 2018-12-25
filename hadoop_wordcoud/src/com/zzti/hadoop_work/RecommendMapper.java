@@ -48,9 +48,12 @@ public class RecommendMapper extends Mapper<LongWritable, Text, Text, DoubleWrit
                 String itermId2 = itermIds[1];
                 Double perference = Double.parseDouble(strArr[1]);
                 Map<String, Double> colItermMap;
+                //如果这个map中不包含这个key，就新建一个colItermMap，
                 if (!colItermOccurrenceMap.containsKey(itermId1)) {
                     colItermMap = new HashMap<String, Double>();
                 } else {
+                    //key is String,value is Map<String,double>
+                    //这里得到就是<String,double>
                     colItermMap = colItermOccurrenceMap.get(itermId1);
                 }
                 colItermMap.put(itermId2, perference);
