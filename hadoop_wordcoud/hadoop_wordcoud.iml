@@ -66,5 +66,14 @@
         <jarDirectory url="file://D:/DOWNLOAD/hadoop-2.8.5/share/hadoop/common/lib" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://D:/DOWNLOAD/jar/mysql-connector-java-8.0.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
