@@ -1,15 +1,12 @@
 package com.zzti.hadoop_work_self;
 
-import Map_Reduce.AdjacencyMatrix;
 import Map_Reduce.BaseDriver;
 import Map_Reduce.JobInitModel;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-
 import java.io.IOException;
 
 public class ItermOccurrence {
@@ -39,8 +36,8 @@ public class ItermOccurrence {
 	public static void run() throws InterruptedException, IOException, ClassNotFoundException {
 		Configuration conf = new Configuration();
 		/*TODO 改一下路径*/
-		String inPath = "D:\\Study\\JAVA\\idea\\output\\Create_data";  //output14
-		String outPath = "D:\\Study\\JAVA\\idea\\output\\AdjacencyMatrix";    //output15
+		String inPath = "D:\\Study\\JAVA\\idea\\output\\Create_data";
+		String outPath = "D:\\Study\\JAVA\\idea\\output\\AdjacencyMatrix";
 		JobInitModel job = new JobInitModel(new String[]{inPath}, outPath, conf, null, "ItermOccurrence", ItermOccurrence.class
 				, null, ItermOccurrenceMapper.class, Text.class, Text.class, null, null
 				, ItermOccurrenceReducer.class, Text.class, Text.class);

@@ -43,11 +43,14 @@ public class UserScoreMatrix {
 	public static void run() throws InterruptedException, IOException, ClassNotFoundException {
 		Configuration conf = new Configuration();
 		/* TODO 输入路径改一下*/
-		String inPath = "D:\\Study\\JAVA\\idea\\output\\Create_data";  //output14
-		String outPath = "D:\\Study\\JAVA\\idea\\output\\AdjacencyMatrix";    //output15
-		JobInitModel job = new JobInitModel(new String[]{inPath}, outPath, conf, null, "UserScoreMatrix", UserScoreMatrix.class
-				, null, UserScoreMatrixMapper.class, Text.class, Text.class, null, null
-				, UserScoreMatrixReducer.class, Text.class, Text.class);
-		BaseDriver.initJob(new JobInitModel[]{job});
+		String inPath = "D:\\Study\\JAVA\\idea\\output\\Create_data";
+		String outPath = "D:\\Study\\JAVA\\idea\\output\\AdjacencyMatrix";
+		JobInitModel userScoreMatrixJob = new JobInitModel(new String[]{inPath}, outPath, conf
+				, null
+				, "UserScoreMatrix", UserScoreMatrix.class
+				, null, UserScoreMatrixMapper.class, Text.class, Text.class
+				, null
+				, null,UserScoreMatrixReducer.class, Text.class, Text.class);
+		BaseDriver.initJob(new JobInitModel[]{userScoreMatrixJob});
 	}
 }
