@@ -1,6 +1,5 @@
 package com.zzti.hadoop_work_self;
 
-import Map_Reduce.AdjacencyMatrix;
 import Map_Reduce.BaseDriver;
 import Map_Reduce.JobInitModel;
 import org.apache.hadoop.conf.Configuration;
@@ -8,7 +7,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-
 import java.io.IOException;
 
 public class UserScoreMatrix {
@@ -32,19 +30,17 @@ public class UserScoreMatrix {
 	public static class UserScoreMatrixReducer extends Reducer<Text, Text, Text, Text> {
 		@Override
 		protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-			String v = null;
+			String v = "";
 			for (Text value : values){
 				v += value.toString() + ",";
 			}
 			context.write(key,new Text(v));
 		}
 	}
-
 	public static void run() throws InterruptedException, IOException, ClassNotFoundException {
 		Configuration conf = new Configuration();
-		/* TODO 输入路径改一下*/
-		String inPath = "D:\\Study\\JAVA\\idea\\output\\Create_data";
-		String outPath = "D:\\Study\\JAVA\\idea\\output\\AdjacencyMatrix";
+		String inPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\itermScore";
+		String outPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\UserScoreMatrix";
 		JobInitModel userScoreMatrixJob = new JobInitModel(new String[]{inPath}, outPath, conf
 				, null
 				, "UserScoreMatrix", UserScoreMatrix.class

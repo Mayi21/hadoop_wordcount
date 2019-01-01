@@ -1,4 +1,4 @@
-package com.zzti.hadoop_work_self;
+package com.zzti.Temp;
 
 import Map_Reduce.*;
 import org.apache.hadoop.conf.Configuration;
@@ -7,7 +7,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -20,7 +19,9 @@ public class Recommend {
 
 		Text k = new Text();
 		DoubleWritable v = new DoubleWritable();
-		//第二个Map存储的是同现矩阵列方向上的itermId和对应的同现度
+		/**
+		* 第二个Map存储的是同现矩阵列方向上的itermId和对应的同现度
+		*/
 		Map<String, Map<String, Double>> colItermOccurrenceMap = new HashMap<String, Map<String, Double>>();
 
 		/**
@@ -30,10 +31,12 @@ public class Recommend {
 		protected void setup(Context context) throws IOException, InterruptedException {
 			super.setup(context);
 			if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
-				//使用过时的getLocalCacheFiles方法,使用通过symlink访问失败,提示找不到该文件,但是链接已经生成了
-				//可能性1:当前程序执行路径不对
-				//可能性2:伪分布式集群有兼容性问题
-				//测试symlink使用的路径:itermOccurrenceMatrix  ./itermOccurrenceMatrix
+				/**
+				 * 使用过时的getLocalCacheFiles方法,使用通过symlink访问失败,提示找不到该文件,但是链接已经生成了
+				 * 可能性1:当前程序执行路径不对
+				 * 可能性2:伪分布式集群有兼容性问题
+				 * 测试symlink使用的路径:itermOccurrenceMatrix  ./itermOccurrenceMatrix
+				 */
 				String path = context.getLocalCacheFiles()[0].getName();
 				File itermOccurrenceMatrix = new File(path);
 				FileReader fileReader = new FileReader(itermOccurrenceMatrix);

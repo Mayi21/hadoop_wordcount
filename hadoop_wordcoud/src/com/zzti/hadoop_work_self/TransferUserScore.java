@@ -1,5 +1,6 @@
 package com.zzti.hadoop_work_self;
 
+import Map_Reduce.BaseDriver;
 import Map_Reduce.HadoopUtil;
 import Map_Reduce.JobInitModel;
 import org.apache.hadoop.conf.Configuration;
@@ -15,7 +16,6 @@ public class TransferUserScore {
 	public static class TransferUserScoreMapper extends Mapper<LongWritable, Text, Text, Text> {
 		Text k = new Text();
 		Text v = new Text();
-
 		@Override
 		protected void map(LongWritable key, Text value, Context context) throws IOException,InterruptedException {
 			String[] strArr = HadoopUtil.SPARATOR.split(value.toString());
@@ -28,9 +28,9 @@ public class TransferUserScore {
 	}
 	public static void run() throws IOException,InterruptedException,ClassNotFoundException{
 		/* TODO 输入路径*/
-		String inputPath = "";
+		String inputPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\UserScoreMatrix";
 		/* TODO 输出路径*/
-		String outPath = "";
+		String outPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\output\\TransferUserScore";
 		Configuration configuration = new Configuration();
 		JobInitModel transferUserScoreJob = new JobInitModel(new String[]{inputPath}, outPath
 				, configuration
@@ -42,6 +42,9 @@ public class TransferUserScore {
 				, null
 				, null
 				, null
+
 		);
+		BaseDriver.initJob(new JobInitModel[]{transferUserScoreJob});
+
 	}
 }

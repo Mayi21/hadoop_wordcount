@@ -1,8 +1,6 @@
-package com.zzti.hadoop_work;
+package com.zzti.hadoop_work_self;
 
 import DataBase.MySqlServerDao;
-import javafx.scene.layout.StackPane;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,7 +11,7 @@ import java.util.*;
 
 public class GetDataFromMySql {
 	private static Connection connection = MySqlServerDao.getConnection();
-	private static String path = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\itermScore";
+	private static String path = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\itermScore";
 	private static File file = new File(path);
 	public static void main(String[] args){
 		getAllItermIdFromUserHis();
@@ -101,6 +99,5 @@ public class GetDataFromMySql {
 		}else {
 			return "0";
 		}
-
 	}
 }
