@@ -1,21 +1,19 @@
 package com.zzti.hadoop_work_self;
 
 import DataBase.MySqlServerDao;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+
+import java.io.*;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class GetDataFromMySql {
 	private static Connection connection = MySqlServerDao.getConnection();
 	private static String path = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\itermScore";
 	private static File file = new File(path);
-	public static void main(String[] args){
-		getAllItermIdFromUserHis();
-	}
 	public static void getAllItermIdFromUserHis(){
 		String sql = "select itermId from userhis";
 		Set set = new TreeSet();
@@ -54,7 +52,7 @@ public class GetDataFromMySql {
 			bufferedOutputStream.write(string.getBytes());
 			bufferedOutputStream.close();
 		}catch (Exception e){
-
+			System.out.println(e.getMessage());
 		}
 	}
 	/**
@@ -98,6 +96,45 @@ public class GetDataFromMySql {
 			return preference;
 		}else {
 			return "0";
+		}
+	}
+	/**
+	 * @deprecated 上传mr后的结果到showIndex表中
+	 * @param null
+	 * @retuen void
+	 */
+	public static void uploadInfoToMySql(){
+		Pattern pattern = Pattern.compile("[\t,]");
+		Connection connection = MySqlServerDao.getConnection();
+		String path = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\output\\RecommendScore\\part-r-00000";
+		File file = new File(path);
+		List<String> list = new ArrayList<>();
+		BufferedReader bufferedReader = null;
+		try{
+			bufferedReader = new BufferedReader(new FileReader(file));
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null){
+				list.add(line);
+			}
+			/**
+			 * 将生成的评分，写入到数据库中
+			 */
+			for (String s: list){
+				String[] info = pattern.split(s);
+				String id = String.valueOf(System.currentTimeMillis());
+				String userId = info[0];
+				String itermId = info[1];
+				float preference = Float.parseFloat(info[2]);
+				String sql = "INSERT INTO showIndex (id,userId,itermId,preference) value (?,?,?,?)";
+				PreparedStatement preparedStatement = connection.prepareStatement(sql);
+				preparedStatement.setString(1,id);
+				preparedStatement.setString(2,userId);
+				preparedStatement.setString(3,itermId);
+				preparedStatement.setFloat(4,preference);
+				preparedStatement.executeUpdate();
+			}
+		}catch (Exception e){
+			System.out.println(e.getMessage());
 		}
 	}
 }

@@ -4,13 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class MySqlServerDao {
-	public static Connection AD(int a){
-		Connection connection = getConnection();
-		if (a == 0){
-			releaseConnection(connection);
-		}
-		return connection;
-	}
 	public static Connection getConnection() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -31,6 +24,5 @@ public class MySqlServerDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//System.out.println("shutdown!");
 	}
 }

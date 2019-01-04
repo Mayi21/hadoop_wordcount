@@ -47,7 +47,6 @@ public class ItermOccurrence {
 	}
 	public static void run() throws InterruptedException, IOException, ClassNotFoundException {
 		Configuration conf = new Configuration();
-		/*TODO 改一下路径*/
 		String inPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\UserScoreMatrix";
 		String outPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\ItermOccurrence";
 		JobInitModel itermOccurrenceJob = new JobInitModel(new String[]{inPath}, outPath, conf

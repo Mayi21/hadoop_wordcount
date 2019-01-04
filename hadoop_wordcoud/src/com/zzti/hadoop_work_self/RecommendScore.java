@@ -22,10 +22,6 @@ public class RecommendScore {
 		@Override
 		protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 			String[] tokens = HadoopUtil.SPARATOR.split(value.toString());
-			/**
-			 *
-			 *
-			 */
 			String[] v1 = tokens[0].split(":");
 			String[] v2 = tokens[1].split(":");
 			if (v1.length > 1) {
@@ -33,6 +29,10 @@ public class RecommendScore {
 				String itemID2 = v1[1];
 				int num = Integer.parseInt(tokens[1]);
 				List<Iterm> list;
+				/**
+				 * itermOccurrenceMatrix包含itermID1就把他的value获取，
+				 * 并且把这个新获取的添加进去，然后再重新推进去
+				 */
 				if (!itermOccurrenceMatrix.containsKey(itemID1)) {
 					list = new ArrayList<Iterm>();
 				} else {
@@ -61,6 +61,10 @@ public class RecommendScore {
 			Map<String, Double> result = new HashMap<String, Double>();
 			for (Text value : values) {
 				String[] str = value.toString().split(",");
+				/**
+				 * 如果有这个itermId，就把值取出来再加上
+				 * 如果没有itermId，就把值推进去
+				 */
 				if (result.containsKey(str[0])) {
 					result.put(str[0], result.get(str[0]) + Double.parseDouble(str[1]));
 				} else {
@@ -75,7 +79,6 @@ public class RecommendScore {
 		}
 	}
 	public static void run() throws Exception{
-		/* TODO 改路径*/
 		String inputPath1 = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\output\\TransferUserScore";
 		String inputPath2 = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\ItermOccurrence";
 		String outPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\output\\RecommendScore";

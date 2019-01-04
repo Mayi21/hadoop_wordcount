@@ -1,152 +1,65 @@
 package com.zzti.Temp;
 
-import Map_Reduce.*;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import DataBase.MySqlServerDao;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class Recommend {
-	public class RecommendMapper extends Mapper<LongWritable, Text, Text, DoubleWritable> {
-
-		Text k = new Text();
-		DoubleWritable v = new DoubleWritable();
-		/**
-		* 第二个Map存储的是同现矩阵列方向上的itermId和对应的同现度
-		*/
-		Map<String, Map<String, Double>> colItermOccurrenceMap = new HashMap<String, Map<String, Double>>();
-
-		/**
-		 * 读取分布式缓存中的同现矩阵进行初始化操作
-		 */
-		@Override
-		protected void setup(Context context) throws IOException, InterruptedException {
-			super.setup(context);
-			if (context.getCacheFiles() != null && context.getCacheFiles().length > 0) {
-				/**
-				 * 使用过时的getLocalCacheFiles方法,使用通过symlink访问失败,提示找不到该文件,但是链接已经生成了
-				 * 可能性1:当前程序执行路径不对
-				 * 可能性2:伪分布式集群有兼容性问题
-				 * 测试symlink使用的路径:itermOccurrenceMatrix  ./itermOccurrenceMatrix
-				 */
-				String path = context.getLocalCacheFiles()[0].getName();
-				File itermOccurrenceMatrix = new File(path);
-				FileReader fileReader = new FileReader(itermOccurrenceMatrix);
-				BufferedReader bufferedReader = new BufferedReader(fileReader);
-				String s;
-				//读取文件的每一行
-				while ((s = bufferedReader.readLine()) != null) {
-					String[] strArr = HadoopUtil.SPARATOR.split(s);
-					String[] itermIds = strArr[0].split(":");
-					String itermId1 = itermIds[0];
-					String itermId2 = itermIds[1];
-					Double perference = Double.parseDouble(strArr[1]);
-					Map<String, Double> colItermMap;
-					if (!colItermOccurrenceMap.containsKey(itermId1)) {
-						colItermMap = new HashMap<String, Double>();
-					} else {
-						colItermMap = colItermOccurrenceMap.get(itermId1);
-					}
-					colItermMap.put(itermId2, perference);
-					colItermOccurrenceMap.put(itermId1, colItermMap);
-				}
-				bufferedReader.close();
-				fileReader.close();
-			}
-		}
-
-		/**
-		 * 读取初始化后的map(同现矩阵),根据用户的评分记录来查找计算对应物品的喜好度
-		 */
-		@Override
-		protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-			String[] strArr = HadoopUtil.SPARATOR.split(value.toString());
-			String[] firstStr = strArr[0].split(":");
-			//开始计算该用户对各个物品的喜好度
-			String userId = firstStr[0];
-			//循环物品同现矩阵的行,计算各个物品
-			for (Map.Entry<String, Map<String, Double>> rowEntry : colItermOccurrenceMap.entrySet()) {
-				//要计算用户对其喜好度的itermId
-				String targetItermId = rowEntry.getKey();
-				//如果该物品已经被该用户评过分,说明该用户已经看过该物品了,跳过
-				if (value.toString().contains(targetItermId)) {
-					continue;
-				}
-				//计算得到的总得分
-				Double totalScore = 0.0;
-				//存储着该targetItermId对应同现矩阵上的每一列
-				Map<String, Double> colIterMap = rowEntry.getValue();
-
-				for (int i = 1; i < strArr.length; i++) {
-					String[] itermPer = strArr[i].split(":");
-					//同现矩阵上列方向的ItermId
-					String itermId2 = itermPer[0];
-					Double perference = Double.parseDouble(itermPer[1]);
-
-					Double occurrence = 0.0;
-					//如果同现矩阵中没有该物品,那么说明当前两个物品相似度为0
-					if (colIterMap.get(itermId2) != null) {
-						occurrence = colIterMap.get(itermId2);
-					}
-					Double score = perference * occurrence;
-					totalScore += score;
-				}
-				k.set(userId + ":" + targetItermId);
-				v.set(totalScore);
-				context.write(k, v);
-			}
-		}
+	private static String path = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\output\\RecommendScore\\part-r-00000";
+	private static Connection connection = MySqlServerDao.getConnection();
+	private static Pattern pattern = Pattern.compile("[\t,]");
+	public static void main(String[] args) throws Exception{
+		//uploadInfoToMySql();
+		getDesFromSql();
 	}
-
-	public class RecommendReducer extends Reducer<Text, DoubleWritable, Text, Text> {
-		Text userId = new Text();
-		Text itermScore = new Text();
-
-		@Override
-		protected void reduce(Text key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException {
-			Double totalScore = 0.0;
-			for (DoubleWritable v : values) {
-				totalScore += v.get();
+	public static void uploadInfoToMySql(){
+		File file = new File(path);
+		List<String> list = new ArrayList<>();
+		BufferedReader bufferedReader = null;
+		try{
+			bufferedReader = new BufferedReader(new FileReader(file));
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null){
+				list.add(line);
 			}
-			String[] strArr = key.toString().split(":");
-			userId.set(strArr[0]);
-			itermScore.set(strArr[1] + ":" + totalScore);
-			context.write(userId, itermScore);
+			/**
+			 * 将生成的评分，写入到数据库中
+			 */
+			for (String s: list){
+				String[] info = pattern.split(s);
+				String id = String.valueOf(System.currentTimeMillis());
+				String userId = info[0];
+				String itermId = info[1];
+				float preference = Float.parseFloat(info[2]);
+				String sql = "INSERT INTO showIndex (id,userId,itermId,preference) value (?,?,?,?)";
+				PreparedStatement preparedStatement = connection.prepareStatement(sql);
+				preparedStatement.setString(1,id);
+				preparedStatement.setString(2,userId);
+				preparedStatement.setString(3,itermId);
+				preparedStatement.setFloat(4,preference);
+				preparedStatement.executeUpdate();
+			}
+		}catch (Exception e){
+			System.out.println(e.getMessage());
 		}
+		System.out.println("-----------------");
 	}
-
-	public static void run() throws InterruptedException, IOException, ClassNotFoundException {
-		Configuration conf = new Configuration();
-		/*TODO 改路径*/
-		String inPath1 = "D:\\Study\\JAVA\\idea\\output\\AdjacencyMatrix";
-		String inPath2 = "D:\\Study\\JAVA\\idea\\output\\Create_pr";
-		String outPath = "D:\\Study\\JAVA\\idea\\output\\CalcPeopleRank";
-		JobInitModel job = new JobInitModel(new String[]{inPath1, inPath2},
-				outPath,
-				conf,
-				null,
-				"Recommend",
-				Recommend.class,
-				null,
-				RecommendMapper.class,
-				Text.class,
-				Text.class,
-				null,
-				null,
-				RecommendReducer.class,
-				Text.class,
-				Text.class);
-		BaseDriver.initJob(new JobInitModel[]{job});
-		File_op.Delete(inPath2);
-		File_op.Rname(outPath, inPath2);
-		File_op.Rname(inPath2 + "\\part-r-00000", inPath2 + "\\peoplerank");
+	public static void getDesFromSql(){
+		String sql = "select itermId,preference from showIndex where userId = '1' order by preference desc";
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()){
+				System.out.println(resultSet.getString("itermId") + " " + resultSet.getString("preference"));
+			}
+		}catch (Exception e){
+			System.out.println(e.getMessage());
+		}
 	}
 }

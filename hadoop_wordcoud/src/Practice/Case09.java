@@ -46,9 +46,7 @@ public class Case09 {
             System.err.println("Usage:wordcount <input><output>");
             System.exit(2);
         }
-
         Job job = new Job(configuration, "word count");
-
         job.setJarByClass(Case09.class);
         job.setMapperClass(TempMapper.class);
         job.setReducerClass(TempReducer.class);
@@ -56,7 +54,6 @@ public class Case09 {
         job.setOutputValueClass(Text.class);
         FileInputFormat.addInputPath(job, new Path(path[0]));
         FileOutputFormat.setOutputPath(job, new Path(path[1]));
-
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 
@@ -71,8 +68,6 @@ public class Case09 {
                         Text value,
                         Context context)
                 throws IOException, InterruptedException {
-            //String[] toks = value.toString().trim().split("\t");
-
             context.write(new Text(), new Text());
         }
         @Override
@@ -82,7 +77,7 @@ public class Case09 {
         }
     }
     private static class TempReducer extends Reducer<Text, Text, Text, Text> {
-        //private String Name = null;
+        Random random = new Random();
         @Override
         protected void setup(Reducer<Text, Text, Text, Text>.Context context)
                 throws IOException, InterruptedException {
@@ -93,10 +88,10 @@ public class Case09 {
                            Iterable<Text> values,
                            Context context)
                 throws IOException, InterruptedException {
-            for(int i = 1;i <= 9999;i++) {
+            for(int i = 1;i <= 99;i++) {
                 try {
-                    String info ="\t" + getFirstName() + getLastName() + "\t" + getSex() + "\t" + getDate() + "\t" + getPhoneNumber() + "\t" + getLoc()  + "";
-                    context.write(new Text(String.valueOf(i)), new Text(info));
+                    String info =getFirstName() + getLastName() + "\t" + getSex() + "\t" + getDate() + "\t" + getPhoneNumber() + "\t" + getLoc() + "\t" + String.valueOf(random.nextInt(5) + 1);
+                    context.write(new Text(String.valueOf(i)),new Text(info));
                 } catch (Exception e) {
                     // TODO: handle exception
                 }

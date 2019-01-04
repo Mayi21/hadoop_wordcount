@@ -27,9 +27,7 @@ public class TransferUserScore {
 		}
 	}
 	public static void run() throws IOException,InterruptedException,ClassNotFoundException{
-		/* TODO 输入路径*/
 		String inputPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\input\\UserScoreMatrix";
-		/* TODO 输出路径*/
 		String outPath = "D:\\Study\\JAVA\\idea\\hadoop\\hadoop_wordcoud\\src\\com\\zzti\\FileFolder\\output\\TransferUserScore";
 		Configuration configuration = new Configuration();
 		JobInitModel transferUserScoreJob = new JobInitModel(new String[]{inputPath}, outPath

@@ -4,9 +4,6 @@ import com.zzti.Temp.Recommend;
 
 public class Run {
 	public static void main(String[] args) throws Exception{
-		UserScoreMatrix.run();
-		ItermOccurrence.run();
-		TransferUserScore.run();
-		RecommendScore.run();
+		GetDataFromMySql.uploadInfoToMySql();
 	}
 }
